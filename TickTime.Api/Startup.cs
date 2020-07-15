@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using NLog;
 using TickTime.Api.Extensions;
 using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using TickTime.Application;
 
 namespace TickTime.Api
@@ -31,6 +32,11 @@ namespace TickTime.Api
             services.AddApplication();
             services.AddControllers()
                 .AddNewtonsoftJson();
+            services.AddApiVersioning(options =>
+            {
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -43,9 +49,10 @@ namespace TickTime.Api
             app.UseHttpsRedirection();
 
             app.UseSwagger();
-            app.UseSwaggerUI(x =>
+            app.UseSwaggerUI(options =>
             {
-                x.SwaggerEndpoint("/swagger/v1/swagger.json", "TickTime API V1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "TickTime API V1");
+                options.SwaggerEndpoint("/swagger/v2/swagger.json", "TickTime API V2");
             });
 
             app.UseStaticFiles();
